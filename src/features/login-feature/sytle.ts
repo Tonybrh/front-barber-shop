@@ -26,8 +26,11 @@ export const RightSection = styled.div`
 `
 
 export const StyledForm = styled.form`
-    display: flex;
+    display: flex !important;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     width: 30%;
+    gap: 20px;
+    margin-top: 100px;
 `;

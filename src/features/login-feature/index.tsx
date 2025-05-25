@@ -1,5 +1,5 @@
 import { GlobalContainer } from "/src/styles/global-style";
-import * as S from "./style";
+import * as S from "./sytle";
 import {Button, Snackbar, TextField} from "@mui/material";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -13,12 +13,20 @@ export default function LoginFeature() {
         resolver: yupResolver(loginSchema)
     });
     const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
 
     const onSubmit: SubmitHandler<UserLoginInputsInterface> = async (data) => {
-        let userLogged = await loginUser(data)
+        let response = await loginUser(data)
 
-        if(userLogged) {
-            setSnackbarOpen(true)
+        if(response) {
+            setSnackbarOpen(true);
+            // Check if user has admin or barber role
+            if (response.user.roles.includes('admin') || response.user.roles.includes('barber')) {
+                // Use window.location for a full page navigation
+                window.location.href = '/dashboard';
+            }
+        } else {
+            setErrorMessage("Email ou senha inválidos");
         }
     }
 
@@ -35,6 +43,11 @@ export default function LoginFeature() {
             </S.LeftSection>
             <S.RightSection>
                 <S.StyledForm onSubmit={handleSubmit(onSubmit)}>
+                    {errorMessage && (
+                        <div style={{ color: 'red', marginBottom: '10px' }}>
+                            {errorMessage}
+                        </div>
+                    )}
                     <TextField
                         {...register('email')}
                         helperText={errors.email?.message}
